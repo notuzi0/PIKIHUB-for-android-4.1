@@ -1,0 +1,14 @@
+{
+  "name": "pikihub-app",
+  "version": "1.0.0",
+  "displayName": "PikiHub",
+  "devDependencies": {
+    "cordova-android": "7.1.4"
+  },
+  "cordova": {
+    "platforms": ["android"],
+    "plugins": {
+      "cordova-plugin-whitelist": {}
+    }
+  }
+}
