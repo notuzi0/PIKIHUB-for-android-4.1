@@ -58,16 +58,18 @@ jobs:
           # Prepare the Android project files (no build yet).
           cordova prepare android
 
-          # Build directly with the project's OWN bundled Gradle wrapper, not
-          # whatever "gradle" happens to be preinstalled on the runner image.
-          # cordova-android 7.1.4's wrapper is an old Gradle version made for
-          # JDK 8 — calling it directly avoids cordova's build step reaching
-          # for the runner's system Gradle (which needs JDK 17+ and breaks
-          # this old toolchain).
+          # Download a known-good old Gradle version directly instead of relying
+          # on a project-bundled gradlew wrapper (which this template doesn't
+          # ship) or the runner's preinstalled Gradle 9 (needs JDK 17+ and is
+          # incompatible with cordova-android 7.1.4's old Android Gradle Plugin).
+          curl -sL -o /tmp/gradle.zip https://services.gradle.org/distributions/gradle-4.10.3-bin.zip
+          unzip -q /tmp/gradle.zip -d /tmp
+          export PATH="/tmp/gradle-4.10.3/bin:$PATH"
+          gradle --version
+
           cd platforms/android
-          chmod +x ./gradlew
           unset GRADLE_HOME
-          ./gradlew assembleDebug --no-daemon
+          gradle assembleDebug --no-daemon
 
       - name: Locate APK
         run: find . -name "*.apk"
