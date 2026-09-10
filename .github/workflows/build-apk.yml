@@ -54,7 +54,20 @@ jobs:
           export PATH="$JAVA_HOME/bin:$PATH"
           echo "Using JAVA_HOME=$JAVA_HOME"
           java -version
-          cordova build android --debug
+
+          # Prepare the Android project files (no build yet).
+          cordova prepare android
+
+          # Build directly with the project's OWN bundled Gradle wrapper, not
+          # whatever "gradle" happens to be preinstalled on the runner image.
+          # cordova-android 7.1.4's wrapper is an old Gradle version made for
+          # JDK 8 — calling it directly avoids cordova's build step reaching
+          # for the runner's system Gradle (which needs JDK 17+ and breaks
+          # this old toolchain).
+          cd platforms/android
+          chmod +x ./gradlew
+          unset GRADLE_HOME
+          ./gradlew assembleDebug --no-daemon
 
       - name: Locate APK
         run: find . -name "*.apk"
