@@ -12,12 +12,16 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # cordova-android 7.x needs an old JDK to compile with the old Gradle/AGP it ships.
-      - name: Set up JDK 8
+      # Install both JDKs. 17 is needed for the Android SDK manager/licensing.
+      # 8 is needed later to actually compile with cordova-android 7.x's old Gradle/AGP.
+      # Listing 8 first, 17 last makes 17 the default JAVA_HOME for the steps in between.
+      - name: Set up JDKs (8 and 17)
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '8'
+          java-version: |
+            8
+            17
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -48,7 +52,7 @@ jobs:
         run: cordova build android --debug
         env:
           ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
-          JAVA_HOME: ${{ env.JAVA_HOME }}
+          JAVA_HOME: ${{ env.JAVA_HOME_8_X64 }}
 
       - name: Locate APK
         run: find . -name "*.apk"
